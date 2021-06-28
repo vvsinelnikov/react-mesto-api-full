@@ -33,6 +33,23 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 // сбор логов
 app.use(requestLogger);
 
+// разрешаем CORS
+const allowedCors = [
+  'http://mesto-vv.nomoredomains.monster/',
+  'https://mesto-vv.nomoredomains.monster/',
+  'http://api.mesto-vv.nomoredomains.monster/',
+  'https://api.mesto-vv.nomoredomains.monster/',
+];
+app.use(function(req, res, next) {
+  const { origin } = req.headers;
+  if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+
+  next();
+});
+
+// основные роуты
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
