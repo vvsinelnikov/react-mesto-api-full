@@ -35,10 +35,10 @@ app.use(requestLogger);
 
 // разрешаем CORS
 const allowedCors = [
-  'http://mesto-vv.nomoredomains.monster/',
-  'https://mesto-vv.nomoredomains.monster/',
-  'http://api.mesto-vv.nomoredomains.monster/',
-  'https://api.mesto-vv.nomoredomains.monster/',
+  'http://mesto-vv.nomoredomains.monster',
+  'https://mesto-vv.nomoredomains.monster',
+  'http://api.mesto-vv.nomoredomains.monster',
+  'https://api.mesto-vv.nomoredomains.monster',
 ];
 app.use(function(req, res, next) {
   const { origin } = req.headers;
