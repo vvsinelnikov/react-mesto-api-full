@@ -1,4 +1,5 @@
-const { REGEX_LINK = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=[\]!$&'()*,;]*)/i } = process.env;
+const { REGEX_LINK } = process.env;
+const regexp_link = NODE_ENV === 'production' ? REGEX_LINK : /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const {
@@ -13,7 +14,7 @@ router.post('/', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(REGEX_LINK),
+    avatar: Joi.string().pattern(regexp_link),
   }),
 }), createUser);
 
@@ -28,7 +29,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(REGEX_LINK),
+    avatar: Joi.string().required().pattern(regexp_link),
   }),
 }), updateAvatar);
 

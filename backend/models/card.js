@@ -1,4 +1,5 @@
-const { REGEX_LINK = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i } = process.env;
+const { REGEX_LINK } = process.env;
+const regexp_link = NODE_ENV === 'production' ? REGEX_LINK : /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const mongoose = require('mongoose');
 const user = require('./user');
 
@@ -14,7 +15,7 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        return REGEX_LINK.test(v);
+        return regexp_link.test(v);
       },
       message: 'Ссылка введена неверно',
     },

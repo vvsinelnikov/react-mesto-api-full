@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
-const { PORT = 3000 } = process.env;
-const { REGEX_LINK = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=[\]!$&'()*,;]*)/i } = process.env;
+require('dotenv').config();
+const { PORT, REGEX_LINK } = process.env;
+const regexp_link = NODE_ENV === 'production' ? REGEX_LINK : /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('express').Router();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
-const path = require('path');
+// const path = require('path'); для раздачи статики
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const Error404 = require('./errors/404');
@@ -27,13 +28,20 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 // раздача статики
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
 
 // сбор логов
 app.use(requestLogger);
 
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
+
+// проверка восстановления сервера pm2
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 // логин
 app.post('/signin', celebrate({
@@ -50,7 +58,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(REGEX_LINK),
+    avatar: Joi.string().pattern(regexp_link),
   }),
 }), createUser);
 
@@ -58,11 +66,11 @@ app.post('/signup', celebrate({
 app.use('/*', router);
 
 router.get('/*', (req, res, next) => {
-  console.log('(app router.get) 404: Ресурс не найден');
+  // console.log('(app router.get) 404: Ресурс не найден');
   next(new Error404('Ресурс не найден'));
 });
 router.post('/*', (req, res, next) => {
-  console.log('(app router.post) 404: Ресурс не найден');
+  // console.log('(app router.post) 404: Ресурс не найден');
   next(new Error404('Ресурс не найден'));
 });
 
@@ -82,6 +90,6 @@ app.use((err, req, res, next) => {
   return res.status(err.statusCode).send({ message: err.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`Hello. App listening on port ${PORT}`);
+app.listen(NODE_ENV === 'production' ? PORT : 3000, () => {
+  console.log(`Hello. App listening on port ${NODE_ENV === 'production' ? PORT : 3000}`);
 });
