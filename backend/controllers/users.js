@@ -1,4 +1,5 @@
 const { NODE_ENV, JWT_SECRET, SALT_ROUNDS } = process.env;
+const saltRounds = NODE_ENV === 'production' ? SALT_ROUNDS : 8
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -55,10 +56,10 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
   User.find({ email })
     .then((user) => { if (user.length > 0) { throw new Error409('Пользователь уже существует'); } })
-    .then(() => bcrypt.hash(
-      password,
-      NODE_ENV === 'production' ? SALT_ROUNDS : 8,
-    ))
+    .then(() => {
+      const salt = bcrypt.genSaltSync(saltRounds);
+      bcrypt.hash(password, salt)
+    })
     .then((hash) => User.create({
       email, password: hash, name, about, avatar,
     }))
