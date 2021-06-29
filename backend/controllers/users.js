@@ -1,5 +1,6 @@
 const { NODE_ENV, JWT_SECRET, SALT_ROUNDS } = process.env;
-const saltRounds = NODE_ENV === 'production' ? SALT_ROUNDS : 8
+// const saltRounds = NODE_ENV === 'production' ? SALT_ROUNDS : 8;
+const saltRounds = 8;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
