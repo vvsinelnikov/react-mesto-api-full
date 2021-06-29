@@ -13,6 +13,7 @@ const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const Error404 = require('./errors/404');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cors = require('cors');
 
 const app = express();
 
@@ -34,20 +35,21 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(requestLogger);
 
 // разрешаем CORS
-const allowedCors = [
-  'http://mesto-vv.nomoredomains.monster',
-  'https://mesto-vv.nomoredomains.monster',
-  'http://api.mesto-vv.nomoredomains.monster',
-  'https://api.mesto-vv.nomoredomains.monster',
-];
-app.use(function(req, res, next) {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+app.use(cors())
+// const allowedCors = [
+//   'http://mesto-vv.nomoredomains.monster',
+//   'https://mesto-vv.nomoredomains.monster',
+//   'http://api.mesto-vv.nomoredomains.monster',
+//   'https://api.mesto-vv.nomoredomains.monster',
+// ];
+// app.use(function(req, res, next) {
+//   const { origin } = req.headers;
+//   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
 
-  next();
-});
+//   next();
+// });
 
 // основные роуты
 app.use('/users', auth, require('./routes/users'));
