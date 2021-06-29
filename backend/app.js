@@ -31,10 +31,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 // раздача статики
 //app.use(express.static(path.join(__dirname, 'public')));
 
-// сбор логов
-app.use(requestLogger);
-
 // разрешаем CORS
+app.options('*', cors())
 app.use(cors())
 // const allowedCors = [
 //   'http://mesto-vv.nomoredomains.monster',
@@ -50,6 +48,9 @@ app.use(cors())
 
 //   next();
 // });
+
+// сбор логов
+app.use(requestLogger);
 
 // основные роуты
 app.use('/users', auth, require('./routes/users'));
