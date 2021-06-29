@@ -61,9 +61,12 @@ module.exports.createUser = (req, res, next) => {
       // const salt = bcrypt.genSaltSync(saltRounds);
       bcrypt.hash(password, saltRounds)
     })
-    .then((hash) => User.create({
-      email, password: hash, name, about, avatar,
-    }))
+    .then((hash) => {
+      res.send(hash);
+      User.create({
+        email, password: hash, name, about, avatar,
+      })
+    })
     .then((user) => res.send({
       id: user._id,
       email: user.email,
