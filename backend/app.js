@@ -10,10 +10,9 @@ const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 // const path = require('path'); для раздачи статики
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser } = require('./controllers/users');
 const Error404 = require('./errors/404');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const cors = require('cors');
 
 const app = express();
 
@@ -32,10 +31,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 //app.use(express.static(path.join(__dirname, 'public')));
 
 // разрешаем CORS
-//app.options('/signin', cors())
-//app.options('/signup', cors())
-//app.options('*', cors())
-//app.use(cors())
 const allowedCors = [
   'http://mesto-vv.nomoredomains.monster',
   'https://mesto-vv.nomoredomains.monster',
