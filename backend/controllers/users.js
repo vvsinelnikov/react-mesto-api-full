@@ -58,8 +58,8 @@ module.exports.createUser = (req, res, next) => {
   User.find({ email })
     .then((user) => { if (user.length > 0) { throw new Error409('Пользователь уже существует'); } })
     .then(() => {
-      const salt = bcrypt.genSaltSync(saltRounds);
-      bcrypt.hash(password, salt)
+      // const salt = bcrypt.genSaltSync(saltRounds);
+      bcrypt.hash(password, saltRounds)
     })
     .then((hash) => User.create({
       email, password: hash, name, about, avatar,
