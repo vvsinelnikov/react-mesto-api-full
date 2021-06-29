@@ -1,6 +1,5 @@
 const { NODE_ENV, JWT_SECRET, SALT_ROUNDS } = process.env;
-// const saltRounds = NODE_ENV === 'production' ? SALT_ROUNDS : 8;
-const saltRounds = 8;
+//const saltRounds = NODE_ENV === 'production' ? SALT_ROUNDS : 8;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -58,22 +57,22 @@ module.exports.createUser = (req, res, next) => {
   User.find({ email })
     .then((user) => { if (user.length > 0) { throw new Error409('Пользователь уже существует'); } })
     .then(() => {
-      // const salt = bcrypt.genSaltSync(saltRounds);
-      bcrypt.hash(password, saltRounds)
+      return bcrypt.hash(password, NODE_ENV === 'production' ? SALT_ROUNDS : 8)
     })
     .then((hash) => {
-      res.send({'hash': hash});
-      User.create({
+      return User.create({
         email, password: hash, name, about, avatar,
       })
     })
-    .then((user) => res.send({
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-    }))
+    .then((user) => {
+      return res.send({
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+      })
+    })
     .catch((err) => { next(err); });
 };
 
