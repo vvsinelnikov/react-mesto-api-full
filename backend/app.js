@@ -36,6 +36,7 @@ const allowedCors = [
   'https://mesto-vv.nomoredomains.monster',
   'http://api.mesto-vv.nomoredomains.monster',
   'https://api.mesto-vv.nomoredomains.monster',
+  'http://localhost:3000'
 ];
 app.use(function(req, res, next) {
   const { origin } = req.headers;
