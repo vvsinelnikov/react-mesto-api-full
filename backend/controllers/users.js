@@ -100,8 +100,9 @@ module.exports.login = (req, res, next) => {
 
 module.exports.logout = (req, res, next) => {
   // res.clearCookie('jwt').send({'ok': 'ok'});
-  res.send(  'Cookies: ', req.cookies);
   res.cookie('jwt', '', {
-    expires: Date.now(),
-  })
+    expires: new Date(Date.now() + 50),
+    httpOnly: true,
+    // expires: Date.now(),
+  }).send({'ok': 'ok'});
 };
