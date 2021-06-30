@@ -87,8 +87,7 @@ module.exports.createUser = (req, res, next) => {
         sameSite: 'None',
         secure: true,
         httpOnly: true,
-      })
-      // .send({'message': 'logged in'});
+      }).send({'message': 'logged in'});
     })
     .catch((err) => { next(err); });
 };
@@ -110,8 +109,7 @@ module.exports.login = (req, res, next) => {
         sameSite: 'None',
         secure: true,
         httpOnly: true,
-      })
-      // .send({'message': 'logged in'});
+      }).send({'message': 'logged in'});
     })
     .catch((err) => { next(err); });
 };
@@ -121,5 +119,5 @@ module.exports.logout = (req, res, next) => {
     expires: new Date(Date.now()),
     httpOnly: true,
   })
-  // .send({'message': 'logged out'});
+  .send({'message': 'logged out'});
 };
