@@ -31,6 +31,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 //app.use(express.static(path.join(__dirname, 'public')));
 
 // разрешаем CORS
+app.options('*', function (req,res) { res.sendStatus(200); });
 const allowedCors = [
   'http://mesto-vv.nomoredomains.monster',
   'https://mesto-vv.nomoredomains.monster',
