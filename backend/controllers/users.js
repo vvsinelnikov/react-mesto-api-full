@@ -99,7 +99,7 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.logout = (req, res, next) => {
-  res.clearCookie('jwt');
+  res.clearCookie('jwt').send('ok');
   // res.cookie('jwt', '', {
   //   expires: Date.now(),
   // })
