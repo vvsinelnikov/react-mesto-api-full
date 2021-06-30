@@ -47,6 +47,7 @@ app.options('*', function (req,res) {
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.sendStatus(200);
+  next();
 });
 app.use(function(req, res, next) {
   const { origin } = req.headers;
