@@ -102,5 +102,5 @@ module.exports.logout = (req, res, next) => {
   res.cookie('jwt', '', {
     expires: new Date(Date.now()),
     httpOnly: true,
-  }).end();;
+  });
 };
