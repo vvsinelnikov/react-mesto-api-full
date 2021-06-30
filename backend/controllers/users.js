@@ -64,14 +64,30 @@ module.exports.createUser = (req, res, next) => {
         email, password: hash, name, about, avatar,
       })
     })
+    // .then((user) => {
+    //   return res.send({
+    //     id: user._id,
+    //     email: user.email,
+    //     name: user.name,
+    //     about: user.about,
+    //     avatar: user.avatar,
+    //   })
+    // })
     .then((user) => {
-      return res.send({
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-      })
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'vv-secret-key',
+        { expiresIn: '7d' },
+      );
+      return token;
+    })
+    .then((token) => {
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        sameSite: 'None',
+        secure: true,
+        httpOnly: true,
+      }).send({'message': 'logged in'});
     })
     .catch((err) => { next(err); });
 };
