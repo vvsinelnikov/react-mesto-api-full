@@ -99,10 +99,8 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.logout = (req, res, next) => {
-  // res.clearCookie('jwt').send({'ok': 'ok'});
   res.cookie('jwt', '', {
-    expires: new Date(Date.now() + 50),
+    expires: new Date(Date.now()),
     httpOnly: true,
-    // expires: Date.now(),
-  }).send({'ok': 'ok'});
+  }).end();;
 };
