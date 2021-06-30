@@ -82,12 +82,13 @@ module.exports.createUser = (req, res, next) => {
       return token;
     })
     .then((token) => {
-      res.cookie('jwt', token, {
+      return res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         sameSite: 'None',
         secure: true,
         httpOnly: true,
-      }).send({'message': 'logged in'});
+      })
+      // .send({'message': 'logged in'});
     })
     .catch((err) => { next(err); });
 };
@@ -104,19 +105,21 @@ module.exports.login = (req, res, next) => {
       return token;
     })
     .then((token) => {
-      res.cookie('jwt', token, {
+      return res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         sameSite: 'None',
         secure: true,
         httpOnly: true,
-      }).send({'message': 'logged in'});
+      })
+      // .send({'message': 'logged in'});
     })
     .catch((err) => { next(err); });
 };
 
 module.exports.logout = (req, res, next) => {
-  res.cookie('jwt', '', {
+  return res.cookie('jwt', '', {
     expires: new Date(Date.now()),
     httpOnly: true,
-  }).send({'message': 'logged out'});
+  })
+  // .send({'message': 'logged out'});
 };
