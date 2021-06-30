@@ -11,7 +11,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 // const path = require('path'); для раздачи статики
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { login, createUser } = require('./controllers/users');
+const { login, logout, createUser } = require('./controllers/users');
 const Error404 = require('./errors/404');
 
 const app = express();
@@ -42,12 +42,10 @@ const allowedCors = [
 app.options('*', function (req,res) {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
-  // res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.sendStatus(200);
-  next();
 });
 app.use(function(req, res, next) {
   const { origin } = req.headers;
@@ -79,6 +77,9 @@ app.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
+
+// логаут
+app.post('/signout', logout);
 
 // регистрация
 app.post('/signup', celebrate({

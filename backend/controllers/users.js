@@ -97,3 +97,9 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => { next(err); });
 };
+
+module.exports.logout = (req, res, next) => {
+  res.cookie('jwt', '', {
+    expires: Date.now(),
+  })
+};
