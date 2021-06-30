@@ -38,7 +38,7 @@ app.options('*', function (req,res) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
+  // res.sendStatus(200);
 });
 const allowedCors = [
   'http://mesto-vv.nomoredomains.monster',
