@@ -15,10 +15,16 @@ router.post('/', celebrate({
   }),
 }), createCard);
 
-router.delete('/:cardId', deleteCard);
+router.delete('/:cardId', celebrate({
+  params: Joi.string().hex().min(24).max(24),
+}), deleteCard);
 
-router.put('/:cardId/likes', likeCard);
+router.put('/:cardId/likes', celebrate({
+  params: Joi.string().hex().min(24).max(24),
+}), likeCard);
 
-router.delete('/:cardId/likes', dislikeCard);
+router.delete('/:cardId/likes', celebrate({
+  params: Joi.string().hex().min(24).max(24),
+}), dislikeCard);
 
 module.exports = router;

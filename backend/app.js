@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 require('dotenv').config();
-const { NODE_ENV, PORT } = process.env;
+const { NODE_ENV, MONGO_URL, PORT } = process.env;
 const regexp_link = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('express').Router();
+const rateLimit = require("express-rate-limit");
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
@@ -12,6 +14,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, logout, createUser } = require('./controllers/users');
+const errorSender = require('./errors/errorsender');
 const Error404 = require('./errors/404');
 
 const app = express();
@@ -20,7 +23,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+console.log(`Hello. App listening on port ${NODE_ENV === 'production' ? PORT : 3000}`);
+
+mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -29,6 +34,16 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 // раздача статики
 //app.use(express.static(path.join(__dirname, 'public')));
+
+// Ограничение количества запросов
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500 // limit each IP to 500 requests per windowMs
+});
+app.use(limiter);
+
+// Добавляем helmet для заголовков и тайтла
+app.use(helmet());
 
 // разрешаем CORS
 const allowedCors = [
@@ -111,14 +126,7 @@ app.use(errorLogger);
 // обработка ошибок celebrate
 app.use(errors());
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  if (err.name === 'CastError') { return res.status(400).send({ message: `Некорректный ID (${err.message})` }); }
-  if (err.name === 'ValidationError') { return res.status(400).send({ message: `Некорректно заполнены данные (${err.message})` }); }
-  // eslint-disable-next-line no-param-reassign
-  if (!err.statusCode) { err.statusCode = 500; }
-  return res.status(err.statusCode).send({ message: err.message });
-});
+app.use(errorSender);
 
 app.listen(NODE_ENV === 'production' ? PORT : 3000, () => {
   console.log(`Hello. App listening on port ${NODE_ENV === 'production' ? PORT : 3000}`);

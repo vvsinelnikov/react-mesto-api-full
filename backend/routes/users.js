@@ -32,6 +32,8 @@ router.patch('/me/avatar', celebrate({
   }),
 }), updateAvatar);
 
-router.get('/:userId', getUser);
+router.get('/:userId', celebrate({
+  params: Joi.string().hex().min(24).max(24),
+}), getUser);
 
 module.exports = router;
