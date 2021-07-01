@@ -1,6 +1,7 @@
 const regexp_link = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+Joi.objectId = require('joi-objectid')(Joi);
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
@@ -16,15 +17,15 @@ router.post('/', celebrate({
 }), createCard);
 
 router.delete('/:cardId', celebrate({
-  params: Joi.string().hex().min(24).max(24),
+  params: Joi.objectId(),
 }), deleteCard);
 
 router.put('/:cardId/likes', celebrate({
-  params: Joi.string().hex().min(24).max(24),
+  params: Joi.objectId(),
 }), likeCard);
 
 router.delete('/:cardId/likes', celebrate({
-  params: Joi.string().hex().min(24).max(24),
+  params: Joi.objectId(),
 }), dislikeCard);
 
 module.exports = router;
