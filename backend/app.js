@@ -83,8 +83,8 @@ const resHeaders = (req, res, next) => {
   res.sendStatus(200);
   next();
 };
-app.options('*', resHeaders());
-app.use(resHeaders());
+app.options('*', (req, res, next) => { resHeaders(req, res, next); });
+app.use((req, res, next) => { resHeaders(req, res, next); });
 
 // сбор логов
 app.use(requestLogger);
