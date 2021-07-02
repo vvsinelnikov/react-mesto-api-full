@@ -1,11 +1,13 @@
 /* eslint-disable no-console */
 require('dotenv').config();
-const { NODE_ENV, MONGO_URL, PORT } = process.env;
-const regexp_link = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
+
+const { NODE_ENV, PORT } = process.env;
+// eslint-disable-next-line no-useless-escape
+const regexpLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const express = require('express');
 const mongoose = require('mongoose');
 const router = require('express').Router();
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -34,12 +36,12 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 // раздача статики
-//app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 // Ограничение количества запросов
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500 // limit each IP to 500 requests per windowMs
+  max: 500, // limit each IP to 500 requests per windowMs
 });
 app.use(limiter);
 
@@ -53,24 +55,36 @@ const allowedCors = [
   'http://api.mesto-vv.nomoredomains.monster',
   'https://api.mesto-vv.nomoredomains.monster',
   'http://localhost:3000',
-  'http://localhost:3001'
+  'http://localhost:3001',
 ];
-app.options('*', function (req,res) {
+// app.options('*', (req, res) => {
+//   const { origin } = req.headers;
+//   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   res.sendStatus(200);
+// });
+// app.use((req, res, next) => {
+//   const { origin } = req.headers;
+//   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   next();
+// });
+
+const resheaders = (req, res, next) => {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.sendStatus(200);
-});
-app.use(function(req, res, next) {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
-  res.header('Access-Control-Allow-Credentials', 'true');
   next();
-});
+};
+app.options('*', resheaders());
+app.use(resheaders);
 
 // сбор логов
 app.use(requestLogger);
@@ -104,7 +118,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(regexp_link),
+    avatar: Joi.string().pattern(regexpLink),
   }),
 }), createUser);
 

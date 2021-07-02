@@ -1,7 +1,15 @@
-const { REGEX_LINK } = process.env;
-const regexp_link = NODE_ENV === 'production' ? REGEX_LINK : /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
+// eslint-disable-next-line no-useless-escape
+const regexpLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=\[\]!\$&'()\*,;]*)/i;
 const validator = require('validator');
 const Error400 = require('../errors/400');
+
+// module.exports.validateId = (req, res, next) => {
+//   if (req.params.Id ) {
+//     if (typeof about !== 'string' || about.length < 2 || about.length > 30) {
+//       throw new Error400('Описание заполнено неверно');
+//     }
+//   }
+// };
 
 module.exports.validateCreateUser = (req, res, next) => {
   const {
@@ -22,7 +30,7 @@ module.exports.validateCreateUser = (req, res, next) => {
   }
   if (avatar) {
     if (!avatar) { throw new Error400('Ссылка на аватар не заполнена'); }
-    if (typeof avatar !== 'string' || !regexp_link.test(avatar)) { throw new Error400('Ссылка на аватар неверно заполнена'); }
+    if (typeof avatar !== 'string' || !regexpLink.test(avatar)) { throw new Error400('Ссылка на аватар неверно заполнена'); }
   }
   next();
 };
@@ -46,7 +54,7 @@ module.exports.validateUpdateProfile = (req, res, next) => {
 module.exports.validateUpdateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   if (!avatar) { throw new Error400('Ссылка на аватар не заполнена'); }
-  if (typeof avatar !== 'string' || !regexp_link.test(avatar)) { throw new Error400('Ссылка на аватар неверно заполнена'); }
+  if (typeof avatar !== 'string' || !regexpLink.test(avatar)) { throw new Error400('Ссылка на аватар неверно заполнена'); }
   next();
 };
 
@@ -67,7 +75,7 @@ module.exports.validateCreateCard = (req, res, next) => {
     }
   }
   if (link) {
-    if (typeof link !== 'string' || !regexp_link.test(link)) {
+    if (typeof link !== 'string' || !regexpLink.test(link)) {
       throw new Error400('Ссылка заполнена неверно');
     }
   }
