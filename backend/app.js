@@ -74,7 +74,7 @@ const allowedCors = [
 //   next();
 // });
 
-const resheaders = (req, res, next) => {
+const resHeaders = (req, res, next) => {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -83,8 +83,8 @@ const resheaders = (req, res, next) => {
   res.sendStatus(200);
   next();
 };
-app.options('*', resheaders());
-app.use(resheaders);
+app.options('*', resHeaders());
+app.use(resHeaders());
 
 // сбор логов
 app.use(requestLogger);
