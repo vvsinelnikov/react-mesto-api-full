@@ -57,34 +57,22 @@ const allowedCors = [
   'http://localhost:3000',
   'http://localhost:3001',
 ];
-// app.options('*', (req, res) => {
-//   const { origin } = req.headers;
-//   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
-//   res.header('Access-Control-Allow-Credentials', 'true');
-//   res.sendStatus(200);
-// });
-// app.use((req, res, next) => {
-//   const { origin } = req.headers;
-//   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
-//   res.header('Access-Control-Allow-Credentials', 'true');
-//   next();
-// });
-
-const resHeaders = (req, res, next) => {
+app.options('*', (req, res) => {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
   res.header('Access-Control-Allow-Credentials', 'true');
-  // res.sendStatus(200);
+  res.sendStatus(200);
+});
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  if (allowedCors.includes(origin)) { res.header('Access-Control-Allow-Origin', origin); }
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
+  res.header('Access-Control-Allow-Credentials', 'true');
   next();
-};
-app.options('*', (req, res, next) => { resHeaders(req, res, next); });
-app.use((req, res, next) => { resHeaders(req, res, next); });
+});
 
 // сбор логов
 app.use(requestLogger);
