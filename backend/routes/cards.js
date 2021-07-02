@@ -6,7 +6,6 @@ Joi.objectId = require('joi-objectid')(Joi);
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
-// const { validateId } = require('../middlewares/validator');
 
 router.get('/', getCards);
 

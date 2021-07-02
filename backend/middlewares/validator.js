@@ -3,14 +3,6 @@ const regexpLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9
 const validator = require('validator');
 const Error400 = require('../errors/400');
 
-// module.exports.validateId = (req, res, next) => {
-//   if (req.params.Id ) {
-//     if (typeof about !== 'string' || about.length < 2 || about.length > 30) {
-//       throw new Error400('Описание заполнено неверно');
-//     }
-//   }
-// };
-
 module.exports.validateCreateUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
