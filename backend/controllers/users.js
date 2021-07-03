@@ -1,4 +1,4 @@
-const { NODE_ENV, JWT_SECRET, SALT_ROUNDS } = process.env;
+const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -31,7 +31,7 @@ module.exports.getMyProfile = (req, res, next) => {
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) { throw new Error404('Пользователь не найден'); }
       return res.send(user);
@@ -41,7 +41,7 @@ module.exports.updateProfile = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) { throw new Error404('Пользователь не найден'); }
       return res.send(user);
@@ -55,15 +55,10 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
   User.find({ email })
     .then((user) => { if (user.length > 0) { throw new Error409('Пользователь уже существует'); } })
-    .then(() => {
-      // return bcrypt.hash(password, NODE_ENV === 'production' ? SALT_ROUNDS : 8)
-      return bcrypt.hash(password, 8)
-    })
-    .then((hash) => {
-      return User.create({
-        email, password: hash, name, about, avatar,
-      })
-    })
+    .then(() => bcrypt.hash(password, 8)) // NODE_ENV === 'production' ? SALT_ROUNDS : 8
+    .then((hash) => User.create({
+      email, password: hash, name, about, avatar,
+    }))
     // .then((user) => {
     //   return res.send({
     //     id: user._id,
@@ -81,14 +76,12 @@ module.exports.createUser = (req, res, next) => {
       );
       return token;
     })
-    .then((token) => {
-      return res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        sameSite: 'None',
-        secure: true,
-        httpOnly: true,
-      }).send({'message': 'logged in'});
-    })
+    .then((token) => res.cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      sameSite: 'None',
+      secure: true,
+      httpOnly: true,
+    }).send({ message: 'logged in' }))
     .catch((err) => { next(err); });
 };
 
@@ -104,20 +97,19 @@ module.exports.login = (req, res, next) => {
       return token;
     })
     .then((token) => {
-      return res.cookie('jwt', token, {
+      res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         sameSite: 'None',
         secure: true,
         httpOnly: true,
-      }).send({'message': 'logged in'});
+      }).send({ message: 'logged in' });
     })
     .catch((err) => { next(err); });
 };
 
-module.exports.logout = (req, res, next) => {
-  return res.cookie('jwt', '', {
+module.exports.logout = (req, res) => {
+  res.cookie('jwt', '', {
     expires: new Date(Date.now()),
     httpOnly: true,
-  })
-  .send({'message': 'logged out'});
+  }).send({ message: 'logged out' });
 };
